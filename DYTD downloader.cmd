@@ -4,6 +4,7 @@ cls
 color 0F
 MODE 70,20
 cls
+set ar=1
 For /f "tokens=2-4 delims=/ " %%a in ('date /t') do (set mydate=%%c-%%a-%%b)
 For /f "tokens=1-2 delims=/:" %%a in ("%TIME%") do (set mytime=%%a.%%b)
 set hour=%time:~0,2%
@@ -17,7 +18,7 @@ wmic os get caption | findstr Microsoft >os
 set /p os=<os &del os
 set url=
 yt --version >version
-certutil -hashfile "%~dp0..\%title_%" md5 | findstr /i 52b2ab0762af9f08211ea1efb7a97c03 >nul && call :09333740634 && goto main || echo Warning don't edit anything...this tool has been corrupted && timeout 5 >nul>nul && taskkill /f /im cmd.exe 
+certutil -hashfile "%~dp0..\%title_%" md5 | findstr /i 3e4a73a24897729be28c8e6d92b8bb49 >nul && call :09333740634 && goto main || echo Warning don't edit anything...this tool has been corrupted && timeout 5 >nul>nul && taskkill /f /im cmd.exe 
 :main
 cls
 title DYTD downloader lite
@@ -34,19 +35,20 @@ cls
 %c_%  {ce} %dl% {e0} ^| {df} Audio Quality:%qt%-{4f}[%bt%]{e0} ^| {2f}[0-9]{1f} best-worst{0f} &echo.
 echo  ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ***MAIN MENU***ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
 %c_%    ----{e0}Just Copy link/URL and select Download Options{0f}---- &echo.           
-echo   ************************************* °°°    °°°
-echo       Enter [a] download audio  °°°°°°°  °°   °  °°°°°°°° °°°°°°° 
-echo       Enter [v] download video   °°   °°  °° °      °°     °°   °°
-echo       Enter [s] easy download    °°   °°   °°       °°     °°   °°
-echo       Enter [t] batch download   °°   °°   °°       °°     °°   °°
-echo       Enter [o] open folder      °°   °°   °°       °°     °°   °°
-echo       Enter [x] extra menu       °°   °°   °°       °°     °°   °°
-echo       Enter [u] check for update°°°°°°     °°       °°    °°°°°°
-echo       Enter [c] convert video to mp3       °°
+echo   *************************************  °°°    °°°
+echo      Enter [a] download audio     °°°°°°°  °°   °  °°°°°°°° °°°°°°° 
+echo      Enter [v] download video      °°   °°  °° °      °°     °°   °°
+echo      Enter [s] easy download       °°   °°   °°       °°     °°   °°
+echo      Enter [t] batch download urls °°   °°   °°       °°     °°   °°
+echo      Enter [d] batch download names°°   °°   °°       °°     °°   °°
+echo      Enter [o] open folder         °°   °°   °°       °°     °°   °°
+echo      Enter [x] extra menu          °°   °°   °°       °°     °°   °°
+echo      Enter [u] check for update   °°°°°°°    °°       °°    °°°°°°°
+echo      Enter [c] convert video to mp3          °°
 echo  ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ
 %c_%  {1f}[y] {df}Download All Playlist {1f}[n] {2f} Single Download {1f}[p] {e0}Selective Download {0f} &echo.
 echo  --------------------------------------------------------------------
-CHOICE /C 0123456789avoxuenypcstz /N /M  "Enter here: "   
+CHOICE /C 0123456789avoxuenypcstzd /N /M  "Enter here: "   
 if %errorlevel%==1 set qt=0 &set bt=best &goto main
 if %errorlevel%==2 set qt=1 &set bt=best &goto main
 if %errorlevel%==3 set qt=2 &set bt=best &goto main
@@ -70,6 +72,36 @@ if %errorlevel%==20 goto convertv2mp3
 if %errorlevel%==21 goto easydownload
 if %errorlevel%==22 goto batchdownload
 if %errorlevel%==23 goto clearcache
+if %errorlevel%==24 goto dlbynames
+
+:dlbynames
+cls
+title Download by [list of names inside txt file]
+echo ----------------------------------------
+echo Enter [a] for audio
+echo Enter [v] for video
+echo Enter [c] cancel
+echo ----------------------------------------
+CHOICE /C avc /N /M  "Enter here: "  
+if %errorlevel%==1 set m=1 &goto listsongs
+if %errorlevel%==2 set m=0 &goto listsongs  
+if %errorlevel%==3 goto main
+:listsongs
+cls
+echo Please wait for pop-up folder and browse 
+echo your txt file with song list inside.
+call :browse1
+for /F "tokens=* delims=" %%a in ('type "%file1%"') do (
+    set "name=%%a"
+echo Please wait downloading...
+	if %m%==1 yt -i -x -c -w --no-warnings --audio-format mp3 --geo-bypass --audio-quality %qt% "ytsearch1:!name! lyrics" -o "%ad%\%%(title)s.%%(ext)s" 
+    if %m%==0 yt -f "best+best" --no-playlist --downloader aria2c.exe "ytsearch1:!name!" -o "%vd%\%%(title)s.%%(ext)s" 
+   )
+echo Finished
+echo  
+echo Finished
+timeout 5 >nul>nul
+goto main
 
 :convertv2mp3
 cls
@@ -87,17 +119,30 @@ goto main
 :easydownload
 cls 
 mode 100,30
-title Easy Downloader via Search
-echo.      ---Options---
-echo -------------------------------
-echo Enter [a] for audio
-echo Enter [v] for video
-echo Enter [c] Go back to Main Menu
-echo --------------------------------
-CHOICE /C avc /N /M  "Enter here: "   
+if %ar%==0 title Easy Downloader via Search aria2c=off
+if %ar%==1 title Easy Downloader via Search aria2c=on
+echo.             ---Options---
+echo ---------------------------------------
+%c_% {02}
+echo  Enter [a] for audio
+echo  Enter [v] for video
+echo  Enter [c] Go back to Main Menu
+echo  Enter [h] Help
+%c_% {0f}
+echo ---------------------------------------
+CHOICE /C avc10h /N /M  "Enter here: "   
 if %errorlevel%==1 goto ea
 if %errorlevel%==2 goto ev  
 if %errorlevel%==3 goto main
+if %errorlevel%==4 set ar=1 &goto easydownload
+if %errorlevel%==5 set ar=0 &goto easydownload
+if %errorlevel%==6 goto easy_help
+:easy_help
+cls
+echo Enter [1] to enable download video using aria2c recommended
+echo Enter [0] to turn off downloading video using aria2c 
+pause >NUL
+goto easydownload
 :ea
 cls
 title easy download audio
@@ -114,14 +159,16 @@ timeout 5 >nul>nul
 goto main
 :ev
 cls
-title easy download video
+if %ar%==0 title easy download video [aria2c=off]
+if %ar%==1 title easy download video [aria2c=on]
 echo.
 set search=
 set /P search="Search for: "
 if not defined search echo No Entry & timeout 3 >nul & goto :easydownload
 set /p num="Enter maximum number to be download: "
 if not defined num set num=1
-yt -i -c -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b" --yes-playlist "ytsearch%num%:%search%" -o %vd%\%%(title)s.%%(ext)s "%url%" --max-download %num%
+if %ar%==0 yt -i -c -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b" --yes-playlist "ytsearch%num%:%search%" -o %vd%\%%(title)s.%%(ext)s --max-download %num%
+if %ar%==1 yt -f "best+best" %pl% --yes-playlist --downloader aria2c.exe "ytsearch%num%:%search%" -o %vd%\%%(title)s.%%(ext)s "%url%" --max-download %num%
 echo  
 echo Finished
 timeout 5 >nul>nul
@@ -574,7 +621,7 @@ goto main
 
 :k
 cls
-MODE 140,40
+MODE 120,500
 title Manual Video Downloader [can select any resolution]
 call :wc
 echo Getting list...
@@ -583,8 +630,9 @@ type playlist.txt | findstr 3gp
 type playlist.txt | findstr webm
 type playlist.txt | findstr mp4
 %c_% ------------------------------------------------Enter {e0}[x]{0f} Back to Main------------------------------------------ &echo.
-set vf=bestvideo &set af=bestaudio
-set /p vf="Enter video Format Number here ex. 136: "
+set af=bestaudio
+set /p vf="Enter Video Format Number here ex. 136: "
+if not defined vf echo No Entry &timeout 3 >nul &goto main
 if %vf%==x goto main
 echo Please wait downloading video...
 yt -f "!vf!+!af!" %pl%  -o %vd%\%%(title)s.%%(ext)s "%url%"
@@ -982,11 +1030,12 @@ goto :main
 :video
 cls
 title Download video %dl% %pl%
-call :wc
-echo Downloading Video please wait...
-yt -i -c --geo-bypass -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b" %pl% -o %vd%\%%(title)s.%%(ext)s "%url%"
+call :wc 
+echo Downloading Video [aria2c] please wait...
+yt -f "best+best" %pl% --downloader aria2c.exe -o %vd%\%%(title)s.%%(ext)s "%url%" 
+if %errorlevel% NEQ 0 cls yt -i -c --geo-bypass -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b" %pl% -o %vd%\%%(title)s.%%(ext)s "%url%"
 if %errorlevel% NEQ 0 cls &%c_% {0c} Error downloading trying method 2 {0f} &echo. &yt -i -c %pl% -o %vd%\%%(title)s.%%(ext)s "%url%"
-if %errorlevel% NEQ 0 cls &%c_% {0c}Error downloading try Manual Download Option{0f} &timeout 5 >nul>nul
+if %errorlevel% NEQ 0 cls &%c_% {0c}Error downloading try Manual Download Option{0f} &timeout 5 >nul
 echo finished!
 timeout 5 >nul
 goto :main
